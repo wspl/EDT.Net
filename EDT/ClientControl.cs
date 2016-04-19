@@ -10,5 +10,6 @@ namespace EDT
     class ClientControl
     {
         public IPEndPoint ClientIPEndPoint;
+
     }
 }
