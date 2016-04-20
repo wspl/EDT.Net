@@ -14,7 +14,15 @@ namespace EDT.Packets
             set { BitConverter.GetBytes(value).CopyTo(_dgram, BaseHeaderSize); }
         }
 
-        protected static int HeaderSize = BaseHeaderSize + 4;
+        public int DataSequence
+        {
+            get { return BitConverter.ToInt32(_dgram, BaseHeaderSize + 4); }
+            set { BitConverter.GetBytes(value).CopyTo(_dgram, BaseHeaderSize + 4); }
+        }
+
+        public static int HeaderSize = BaseHeaderSize + 8;
+
+        public static int MaxAckCount = (Config.MaxPacketSize - HeaderSize) / 4;
 
         public List<int> AckList
         {
@@ -40,10 +48,10 @@ namespace EDT.Packets
             }
         }
 
-        public DataAckPacket(int clientId, int ackSequance, List<int> ackList) :
+        public DataAckPacket(int clientId, int ackSequence, List<int> ackList) :
             base(clientId, PacketType.DataAckPacket)
         {
-            AckSequence = ackSequance;
+            AckSequence = ackSequence;
             AckList = ackList;
         }
 

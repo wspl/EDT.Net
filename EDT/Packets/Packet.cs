@@ -44,7 +44,7 @@ namespace EDT.Packets
             set { BitConverter.GetBytes(value).CopyTo(_dgram, 4); }
         }
 
-        protected static int BaseHeaderSize = 8;
+        public static int BaseHeaderSize = 8;
 
         public Packet(int size, PacketType packetType)
         {

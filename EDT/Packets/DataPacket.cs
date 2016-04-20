@@ -32,7 +32,8 @@ namespace EDT.Packets
             set { BitConverter.GetBytes(value).CopyTo(_dgram, BaseHeaderSize + 10); }
         }
 
-        protected static int HeaderSize = BaseHeaderSize + 12;
+        public static int HeaderSize = BaseHeaderSize + 12;
+        public static int MaxChunkSize = Config.MaxPacketSize - HeaderSize;
 
         public byte[] Chunk
         {

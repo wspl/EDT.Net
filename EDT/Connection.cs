@@ -18,20 +18,23 @@ namespace EDT
     {
         public UdpClient Conn;
 
+        public IPEndPoint ServerIPEndPoint;
+
         public ConnectionMode Mode { get; }
 
-        public Connection(ConnectionMode mode)
+        public Connection(ConnectionMode mode, IPEndPoint serverIPEndPoint)
         {
             Mode = mode;
+            ServerIPEndPoint = serverIPEndPoint;
 
             if (mode == ConnectionMode.Server)
             {
-                Conn = new UdpClient(new IPEndPoint(IPAddress.Any, Config.ListenPort));
+                Conn = new UdpClient(serverIPEndPoint);
             }
             else if (mode == ConnectionMode.Client)
             {
                 Conn = new UdpClient();
-                Conn.Connect(Config.ServerHost, Config.ServerPort);
+                Conn.Connect(serverIPEndPoint);
             }
         }
 

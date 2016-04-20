@@ -14,12 +14,12 @@ namespace EDT.Packets
             set { BitConverter.GetBytes(value).CopyTo(_dgram, BaseHeaderSize); }
         }
 
-        protected static int HeaderSize = BaseHeaderSize + 4;
+        public static int HeaderSize = BaseHeaderSize + 4;
 
-        public DataAck2Packet(int clientId, int ackSequance) :
+        public DataAck2Packet(int clientId, int ackSequence) :
             base(clientId, PacketType.DataAck2Packet)
         {
-            AckSequence = ackSequance;
+            AckSequence = ackSequence;
         }
 
         public DataAck2Packet(byte[] dgram) : base(dgram) { }

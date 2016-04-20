@@ -22,7 +22,7 @@ namespace EDT
             ClientId = clientId;
             ClientIPEndPoint = clientIPEndPoint;
 
-            DataControl = new DataControl(conn);
+            DataControl = new DataControl(conn, ClientIPEndPoint);
         }
 
         /// <summary>

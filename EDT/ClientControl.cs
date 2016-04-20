@@ -13,7 +13,20 @@ namespace EDT
         public Connection Conn;
         public DataControl DataControl;
 
-        public int ClientId = 0;
+        public IPEndPoint ServerIPEndPoint;
+
+        private int _clientId = 0;
+        public int ClientId {
+            get
+            {
+                return _clientId;
+            }
+            set
+            {
+                _clientId = value;
+                DataControl.ClientId = value;
+            }
+        }
 
         public int PingId = 0;
         public int PingResponsed = 0;
@@ -21,7 +34,8 @@ namespace EDT
         public ClientControl(Connection conn)
         {
             Conn = conn;
-            DataControl = new DataControl(conn);
+
+            DataControl = new DataControl(conn, null);
             DataControl.SendSpeed = Config.UploadSpeed;
             DataControl.ReceiveSpeed = Config.DownloadSpeed;
 

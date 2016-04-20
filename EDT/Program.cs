@@ -28,11 +28,11 @@ namespace EDT
         static void Main(string[] args)
         {
 
-            Connection server = new Connection(ConnectionMode.Server);
-            Connection client = new Connection(ConnectionMode.Client);
+            //Connection server = new Connection(ConnectionMode.Server);
+            //Connection client = new Connection(ConnectionMode.Client);
 
-            Gateway serverGateway = new Gateway(server);
-            Gateway clientGateway = new Gateway(client);
+            //Gateway serverGateway = new Gateway(server);
+            //Gateway clientGateway = new Gateway(client);
 
             Console.ReadKey();
         }
