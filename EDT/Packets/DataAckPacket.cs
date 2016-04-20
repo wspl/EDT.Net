@@ -6,10 +6,15 @@ using System.Threading.Tasks;
 
 namespace EDT.Packets
 {
-    class DataAckPacket : Packet
+    public class DataAckPacket : Packet
     {
+        public int AckSequence
+        {
+            get { return BitConverter.ToInt32(_dgram, BaseHeaderSize); }
+            set { BitConverter.GetBytes(value).CopyTo(_dgram, BaseHeaderSize); }
+        }
 
-        protected static int HeaderSize = BaseHeaderSize;
+        protected static int HeaderSize = BaseHeaderSize + 4;
 
         public List<int> AckList
         {
@@ -35,9 +40,10 @@ namespace EDT.Packets
             }
         }
 
-        public DataAckPacket(int connId, List<int> ackList) :
-            base(connId, PacketType.DataAckPacket)
+        public DataAckPacket(int clientId, int ackSequance, List<int> ackList) :
+            base(clientId, PacketType.DataAckPacket)
         {
+            AckSequence = ackSequance;
             AckList = ackList;
         }
 

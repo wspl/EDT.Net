@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Net;
 using System.Net.Sockets;
+using EDT.Packets;
+using System.Diagnostics;
 
 namespace EDT
 {
@@ -25,23 +27,12 @@ namespace EDT
 
         static void Main(string[] args)
         {
+
             Connection server = new Connection(ConnectionMode.Server);
             Connection client = new Connection(ConnectionMode.Client);
 
-            client.ReceiveAsync((data, source) => {
-                Console.WriteLine("Client Receive: " + data.Length);
-            });
-
-            server.ReceiveAsync((data, source) => {
-                Console.WriteLine("Server Receive: " + data.Length);
-                source.SendAsync(new byte[666], (e) => {
-                    Console.WriteLine("Reply");
-                });
-            });
-             
-            client.SendAsync(new byte[100], (data) => {
-                Console.WriteLine("Sent");
-            });
+            Gateway serverGateway = new Gateway(server);
+            Gateway clientGateway = new Gateway(client);
 
             Console.ReadKey();
         }

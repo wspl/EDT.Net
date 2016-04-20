@@ -14,5 +14,8 @@ namespace EDT
         public static int ServerPort = 45000;
 
         public static int ListenPort = 45000;
+
+        public static short DownloadSpeed = 1000;
+        public static short UploadSpeed = 100;
     }
 }

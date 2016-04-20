@@ -6,22 +6,22 @@ using System.Threading.Tasks;
 
 namespace EDT.Packets
 {
-    public class PingAckPacket : Packet
+    public class DataAck2Packet : Packet
     {
-        public int PingId
+        public int AckSequence
         {
             get { return BitConverter.ToInt32(_dgram, BaseHeaderSize); }
             set { BitConverter.GetBytes(value).CopyTo(_dgram, BaseHeaderSize); }
         }
 
-        public static int HeaderSize = BaseHeaderSize + 4;
+        protected static int HeaderSize = BaseHeaderSize + 4;
 
-        public PingAckPacket(int connId, int pingId) :
-            base(HeaderSize, PacketType.PingPacket, connId)
+        public DataAck2Packet(int clientId, int ackSequance) :
+            base(clientId, PacketType.DataAck2Packet)
         {
-            PingId = pingId;
+            AckSequence = ackSequance;
         }
 
-        public PingAckPacket(byte[] dgram) : base(dgram) { }
+        public DataAck2Packet(byte[] dgram) : base(dgram) { }
     }
 }

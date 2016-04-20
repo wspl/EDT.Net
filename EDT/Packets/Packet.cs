@@ -38,7 +38,7 @@ namespace EDT.Packets
             set { BitConverter.GetBytes((short)value).CopyTo(_dgram, 2); }
         }
 
-        public int ConnId
+        public int ClientId
         {
             get { return BitConverter.ToInt32(_dgram, 4); }
             set { BitConverter.GetBytes(value).CopyTo(_dgram, 4); }
@@ -54,19 +54,37 @@ namespace EDT.Packets
             Type = packetType;
         }
 
-        public Packet(int size, PacketType packetType, int connId) : this(size, packetType)
+        public Packet(int size, PacketType packetType, int clientId) : this(size, packetType)
         {
-            ConnId = connId;
+            ClientId = clientId;
         }
 
         public Packet(PacketType packetType) : this(1500, packetType) { }
 
-        public Packet(PacketType packetType, int connId) : this(1500, packetType, connId) { }
+        public Packet(PacketType packetType, int clientId) : this(1500, packetType, clientId) { }
 
         public Packet(byte[] dgram)
         {
             Dgram = dgram;
             Size = dgram.Length;
+        }
+
+        public static Packet Parse(byte[] dgram)
+        {
+            PacketType packetType = (PacketType)BitConverter.ToInt16(dgram, 2);
+            switch (packetType)
+            {
+                case PacketType.DataPacket: return new DataPacket(dgram);
+                case PacketType.DataAckPacket: return new DataAckPacket(dgram);
+
+                case PacketType.PingPacket: return new PingPacket(dgram);
+                case PacketType.Ping2Packet: return new Ping2Packet(dgram);
+
+                //case PacketType.CloseConnPacket: return new CloseConnPacket(dgram);
+                //case PacketType.CloseStreamPacket: return new CloseStreamPacket(dgram);
+
+                default: return null;
+            }
         }
     }
 
@@ -76,10 +94,11 @@ namespace EDT.Packets
         None = 0x00,
 
         DataPacket = 0x11,
-        DataAckPacket = 0x11,
+        DataAckPacket = 0x12,
+        DataAck2Packet = 0x13,
 
         PingPacket = 0x21,
-        PingAckPacket = 0x22,
+        Ping2Packet = 0x22,
 
         CloseConnPacket = 0x41,
         CloseStreamPacket = 0x42

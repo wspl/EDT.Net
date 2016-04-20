@@ -16,26 +16,33 @@ namespace EDT.Packets
 
         public short DownloadSpeed
         {
-            get { return BitConverter.ToInt16(_dgram, BaseHeaderSize + 4); }
-            set { BitConverter.GetBytes(value).CopyTo(_dgram, BaseHeaderSize + 4); }
-        }
-
-        public short UploadSpeed
-        {
             get { return BitConverter.ToInt16(_dgram, BaseHeaderSize + 6); }
             set { BitConverter.GetBytes(value).CopyTo(_dgram, BaseHeaderSize + 6); }
         }
 
-        public static int HeaderSize = BaseHeaderSize + 8;
-
-        public PingPacket(int connId, int pingId, short downloadSpeed, short uploadSpeed) :
-            base(HeaderSize, PacketType.PingPacket, connId)
+        public short UploadSpeed
         {
-            PingId = pingId;
-            DownloadSpeed = downloadSpeed;
-            UploadSpeed = uploadSpeed;
+            get { return BitConverter.ToInt16(_dgram, BaseHeaderSize + 8); }
+            set { BitConverter.GetBytes(value).CopyTo(_dgram, BaseHeaderSize + 8); }
         }
 
+        public static int HeaderSize = BaseHeaderSize + 10;
+
+        public PingPacket(int clientId, int pingId, short downloadSpeed = 0, short uploadSpeed = 0) :
+            base(HeaderSize, PacketType.PingPacket, clientId)
+        {
+            PingId = pingId;
+            if (downloadSpeed != 0 || uploadSpeed != 0)
+            {
+                DownloadSpeed = downloadSpeed;
+                UploadSpeed = uploadSpeed;
+            }
+            else
+            {
+                Size = BaseHeaderSize + 4;
+            }
+        }
+        
         public PingPacket(byte[] dgram) : base(dgram) { }
     }
 }

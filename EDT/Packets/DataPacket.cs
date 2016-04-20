@@ -49,9 +49,9 @@ namespace EDT.Packets
             }
         }
 
-        public DataPacket(int connId, int dataSequence, byte[] chunk,
+        public DataPacket(int clientId, int dataSequence, byte[] chunk,
                           int chunkSequence, short chunkOffset, short chunkSize) :
-            base(connId, PacketType.DataPacket)
+            base(clientId, PacketType.DataPacket)
         {
             DataSequence = dataSequence;
             ChunkSequence = chunkSequence;
