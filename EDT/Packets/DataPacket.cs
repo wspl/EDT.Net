@@ -20,19 +20,19 @@ namespace EDT.Packets
             set { BitConverter.GetBytes(value).CopyTo(_dgram, BaseHeaderSize + 4); }
         }
 
-        public short ChunkOffset
+        public int ChunkOffset
         {
-            get { return BitConverter.ToInt16(_dgram, BaseHeaderSize + 8); }
+            get { return BitConverter.ToInt32(_dgram, BaseHeaderSize + 8); }
             set { BitConverter.GetBytes(value).CopyTo(_dgram, BaseHeaderSize + 8); }
         }
 
-        public short ChunkSize
+        public int ChunkSize
         {
-            get { return BitConverter.ToInt16(_dgram, BaseHeaderSize + 10); }
-            set { BitConverter.GetBytes(value).CopyTo(_dgram, BaseHeaderSize + 10); }
+            get { return BitConverter.ToInt32(_dgram, BaseHeaderSize + 12); }
+            set { BitConverter.GetBytes(value).CopyTo(_dgram, BaseHeaderSize + 12); }
         }
 
-        public static int HeaderSize = BaseHeaderSize + 12;
+        public static int HeaderSize = BaseHeaderSize + 16;
         public static int MaxChunkSize = Config.MaxPacketSize - HeaderSize;
 
         public byte[] Chunk
@@ -51,7 +51,7 @@ namespace EDT.Packets
         }
 
         public DataPacket(int clientId, int dataSequence, byte[] chunk,
-                          int chunkSequence, short chunkOffset, short chunkSize) :
+                          int chunkSequence, int chunkOffset, int chunkSize) :
             base(clientId, PacketType.DataPacket)
         {
             DataSequence = dataSequence;
