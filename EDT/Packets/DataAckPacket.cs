@@ -48,10 +48,11 @@ namespace EDT.Packets
             }
         }
 
-        public DataAckPacket(int clientId, int ackSequence, List<int> ackList) :
+        public DataAckPacket(int clientId, int ackSequence, int dataSequence, List<int> ackList) :
             base(clientId, PacketType.DataAckPacket)
         {
             AckSequence = ackSequence;
+            DataSequence = dataSequence;
             AckList = ackList;
         }
 

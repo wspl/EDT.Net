@@ -19,12 +19,14 @@ namespace EDT
         public short SendSpeed = 10;
         public short ReceiveSpeed = 10;
 
-        public Dictionary<int, Dictionary<int, DataPacket>> DataPool;
+        public Dictionary<int, Dictionary<int, DataPacket>> DataPool = new Dictionary<int, Dictionary<int, DataPacket>>();
 
         public int LastDataSequence;
-        public Dictionary<int, int> LastChunkSequence;
+        public Dictionary<int, int> LastChunkSequence = new Dictionary<int, int>();
 
-        public Dictionary<int, List<int>> AckList;
+        public Dictionary<int, List<int>> AckList = new Dictionary<int, List<int>>();
+
+        public Dictionary<int, short> DoneAckList = new Dictionary<int, short>(); //null-unsent, 0-sent, 1-done
 
         public Stream DataStream = new MemoryStream();
 
@@ -32,8 +34,6 @@ namespace EDT
         {
             Conn = conn;
             Target = target;
-
-            DataPool = new Dictionary<int, Dictionary<int, DataPacket>>();
         }
 
         public async Task AutoAck()
@@ -45,7 +45,9 @@ namespace EDT
                 {
                     if (ackList.Value.Count > 0)
                     {
-                        await SendAck(ackList.Key);
+                        Task.Run(async () => {
+                            await SendAck(ackList.Key);
+                        });
                     }
                 }
             }
@@ -53,8 +55,19 @@ namespace EDT
 
         public async Task SendAck(int dataSequence)
         {
-            await SendDataAckPacketAsync(dataSequence, AckList[dataSequence]);
+            DataAckPacket dataAckPacket = new DataAckPacket(ClientId, 0, dataSequence, AckList[dataSequence]);
+            dataAckPacket.AckSequence = dataAckPacket.GetHashCode();
+            await Conn.SendAsync(dataAckPacket.Dgram, Target);
+
+            DoneAckList[dataAckPacket.AckSequence] = 0;
+
             AckList[dataSequence].Clear();
+
+            while (DoneAckList[dataAckPacket.AckSequence] == 1)
+            {
+                await Task.Delay(1000);
+                await Conn.SendAsync(dataAckPacket.Dgram, Target);
+            }
         }
 
         public async Task SendDataAsync(Stream dataStream)
@@ -92,8 +105,8 @@ namespace EDT
 
         public void OnData(DataPacket packet)
         {
-            // create ack pool for new client
-            if (!AckList.ContainsKey(packet.ClientId))
+            // create ack pool for new data
+            if (!AckList.ContainsKey(packet.DataSequence))
             {
                 AckList.Add(packet.DataSequence, new List<int>());
             }
@@ -123,13 +136,6 @@ namespace EDT
             });
         }
 
-        public async Task SendDataAckPacketAsync(int dataSequence, List<int> ackList)
-        {
-            DataAckPacket dataAckPacket = new DataAckPacket(ClientId, dataSequence, ackList);
-
-            await Conn.SendAsync(dataAckPacket.Dgram, Target);
-        }
-
         public void OnDataAck(DataAckPacket packet)
         {
             throw new NotImplementedException();
@@ -137,7 +143,7 @@ namespace EDT
 
         public void OnDataAck2(DataAck2Packet packet)
         {
-            throw new NotImplementedException();
+            DoneAckList[packet.AckSequence] = 1;
         }
     }
 }
