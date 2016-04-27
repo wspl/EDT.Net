@@ -52,7 +52,7 @@ namespace EDT.Packets
 
         public DataPacket(int clientId, int dataSequence, byte[] chunk,
                           int chunkSequence, int chunkOffset, int chunkSize) :
-            base(clientId, PacketType.DataPacket)
+            base(HeaderSize, PacketType.DataPacket, clientId)
         {
             DataSequence = dataSequence;
             ChunkSequence = chunkSequence;

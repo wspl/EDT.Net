@@ -45,7 +45,8 @@
   <ItemGroup>
     <Compile Include="ClientControl.cs" />
     <Compile Include="DataControl.cs" />
-    <Compile Include="Gateway.cs" />
+    <Compile Include="EdtListener.cs" />
+    <Compile Include="EdtClient.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Connection.cs" />
     <Compile Include="Packets\DataAck2Packet.cs" />

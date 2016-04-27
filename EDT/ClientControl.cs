@@ -15,8 +15,9 @@ namespace EDT
 
         public IPEndPoint ServerIPEndPoint;
 
-        private int _clientId = 0;
-        public int ClientId {
+        private int _clientId;
+        public int ClientId
+        {
             get
             {
                 return _clientId;
@@ -24,11 +25,7 @@ namespace EDT
             set
             {
                 _clientId = value;
-
-                if (DataControl != null)
-                {
-                    DataControl.ClientId = value;
-                }
+                DataControl.ClientId = value;
             }
         }
 
@@ -39,6 +36,7 @@ namespace EDT
         public ClientControl(Connection conn)
         {
             Conn = conn;
+            ServerIPEndPoint = conn.ServerIPEndPoint;
 
             DataControl = new DataControl(conn, ClientId, ServerIPEndPoint);
             DataControl.Sender.SendSpeed = Config.UploadSpeed;
@@ -56,7 +54,8 @@ namespace EDT
                 {
                     PingId += 1;
                     PingPacket pingPacket = new PingPacket(ClientId, PingId, Config.DownloadSpeed, Config.UploadSpeed);
-                    await Conn.SendAsync(pingPacket.Dgram);
+                    await Conn.SendAsync(pingPacket.Dgram, ServerIPEndPoint);
+                    Console.WriteLine("Ping Sent: " + PingId);
                     await Task.Delay(1000);
                 }
             });
@@ -74,9 +73,10 @@ namespace EDT
             if (ClientId == 0)
             {
                 ClientId = ping2Packet.ClientId;
+                Console.WriteLine("Client OK: " + ClientId);
             }
 
-            Console.WriteLine(PingResponsed);
+            Console.WriteLine("Ping2 Received: " + PingResponsed);
         }
     }
 }

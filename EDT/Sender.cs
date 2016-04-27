@@ -61,7 +61,10 @@ namespace EDT
                 int readSize = await dataStream.ReadAsync(chunk, 0, chunk.Length);
                 if (readSize > 0)
                 {
-                    await SendDataPacketAsync(dataSequence, chunk, offset, chunk.Length);
+                    Task.Run(async () => {
+                        await SendDataPacketAsync(dataSequence, chunk, offset, chunk.Length);
+                    });
+                    await Task.Delay(500);
                     offset += chunk.Length;
                 }
             }
@@ -77,11 +80,19 @@ namespace EDT
         /// <returns></returns>
         public async Task SendDataPacketAsync(int dataSequence, byte[] chunk, int offset, int size)
         {
+            Console.WriteLine("Sending Packet with Size: " + size + ", target: " + ReceiverIPEndPoint.ToString());
+
+            if (!LastChunkSequence.ContainsKey(dataSequence))
+            {
+                LastChunkSequence.Add(dataSequence, 0);
+            }
+
             int chunkSequence = LastChunkSequence[dataSequence] += 1;
             DataPacket dataPacket = new DataPacket(ClientId, dataSequence, chunk, chunkSequence, offset, size);
             DataPool[dataSequence].Add(chunkSequence, dataPacket);
 
-            await Conn.SendAsync(dataPacket.Dgram, ReceiverIPEndPoint);
+            await Conn.Conn.SendAsync(dataPacket.Dgram, dataPacket.Dgram.Length, ReceiverIPEndPoint);
+            Console.WriteLine("Sent!");
         }
 
         /// <summary>
@@ -108,7 +119,7 @@ namespace EDT
         public async Task SendAck2Async(int ackSequence)
         {
             DataAck2Packet dataAck2Packet = new DataAck2Packet(ClientId, ackSequence);
-            await Conn.SendAsync(dataAck2Packet.Dgram);
+            await Conn.SendAsync(dataAck2Packet.Dgram, ReceiverIPEndPoint);
         }
     }
 }

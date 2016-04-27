@@ -14,21 +14,18 @@ namespace EDT
         public Connection Conn;
         public IPEndPoint Target;
 
-        public int _clientId;
+        private int _clientId;
         public int ClientId
         {
             get
             {
                 return _clientId;
             }
-            set {
+            set
+            {
                 _clientId = value;
-
-                if (Sender != null && Receiver != null)
-                {
-                    Sender.ClientId = value;
-                    Receiver.ClientId = value;
-                }
+                Sender.ClientId = value;
+                Receiver.ClientId = value;
             }
         }
 
@@ -38,10 +35,11 @@ namespace EDT
         public DataControl(Connection conn, int clientId, IPEndPoint target)
         {
             Conn = conn;
-            ClientId = clientId;
 
             Sender = new Sender(conn, target, clientId);
             Receiver = new Receiver(conn, target, clientId);
+
+            ClientId = clientId;
         }
     }
 }

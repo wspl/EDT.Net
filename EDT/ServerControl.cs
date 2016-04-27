@@ -33,13 +33,13 @@ namespace EDT
 
         public IPEndPoint ClientIPEndPoint;
 
-        public ServerControl(Connection conn, int clientId, IPEndPoint clientIPEndPoint)
+        public ServerControl(Connection conn, IPEndPoint clientIPEndPoint)
         {
             Conn = conn;
-            ClientId = clientId;
+            ClientId = GetHashCode();
             ClientIPEndPoint = clientIPEndPoint;
 
-            DataControl = new DataControl(conn, 0, clientIPEndPoint);
+            DataControl = new DataControl(conn, ClientId, clientIPEndPoint);
         }
 
         /// <summary>
@@ -48,11 +48,15 @@ namespace EDT
         /// <param name="pingPacket">Ping packet received from client.</param>
         public void OnPing(PingPacket pingPacket)
         {
+            Console.WriteLine("Ping Received: " + pingPacket.PingId);
+
             DataControl.Sender.SendSpeed = pingPacket.DownloadSpeed;
 
             Ping2Packet ping2Packet = new Ping2Packet(ClientId, pingPacket.PingId);
 
-            Conn.BeginSend(ping2Packet.Dgram, ClientIPEndPoint);
+            Task.Run(async () => {
+                await Conn.SendAsync(ping2Packet.Dgram, ClientIPEndPoint);
+            });
         }
     }
 }

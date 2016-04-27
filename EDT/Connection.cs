@@ -33,18 +33,21 @@ namespace EDT
             }
             else if (mode == ConnectionMode.Client)
             {
-                Conn = new UdpClient();
-                Conn.Connect(serverIPEndPoint);
+                Conn = new UdpClient(new IPEndPoint(IPAddress.Any, 0));
             }
         }
 
-        public Connection(IPEndPoint clientIPEndPoint)
+        public async Task<int> SendAsync(byte[] dgram, IPEndPoint targetIPEndPoint)
         {
-            Mode = ConnectionMode.Client;
-            Conn = new UdpClient();
-            Conn.Connect(clientIPEndPoint);
+            return await Conn.SendAsync(dgram, dgram.Length, targetIPEndPoint);
+        }
+        
+        public async Task<UdpReceiveResult> ReceiveAsync()
+        {
+            return await Conn.ReceiveAsync();
         }
 
+        /*
         public delegate void ReceiveCallback(byte[] dgram, IPEndPoint sourceIPEndPoint);
         private ReceiveCallback _receiveCallback;
 
@@ -86,21 +89,24 @@ namespace EDT
         {
             Conn.BeginSend(dgram, dgram.Length, (r) => { }, dgram);
         }
-
+        
         public async Task<int> SendAsync(byte[] dgram)
         {
             return await Conn.SendAsync(dgram, dgram.Length);
         }
+        
 
         public async Task<int> SendAsync(byte[] dgram, IPEndPoint targetIPEndPoint)
         {
             return await Conn.SendAsync(dgram, dgram.Length, targetIPEndPoint);
         }
 
+        
         private void SendCallbackHandle(IAsyncResult result)
         {
             byte[] dgram = (byte[])result.AsyncState;
             _sendCallback(dgram);
         }
+        \*/
     }
 }

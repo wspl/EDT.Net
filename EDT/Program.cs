@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Sockets;
 using EDT.Packets;
 using System.Diagnostics;
+using System.IO;
 
 namespace EDT
 {
@@ -30,12 +31,29 @@ namespace EDT
 
             Task.Run(() => {
                 Connection server = new Connection(ConnectionMode.Server, new IPEndPoint(IPAddress.Any, 12344));
-                Gateway serverGateway = new Gateway(server);
+                EdtClient serverGateway = new EdtClient(server);
+
+                string path = @"D:\Plutonist\Pictures\Received.jpeg";
+                using (FileStream fs = File.OpenWrite(path))
+                {
+                    while (serverGateway.ServerControls.Count > 0)
+                    {
+                        serverGateway.ServerControls.First().Value.DataControl.Receiver.OutputStream = fs;
+                    }
+                }
             });
 
-            Task.Run(() => {
+            Task.Run(async () => {
                 Connection client = new Connection(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 12344));
-                Gateway clientGateway = new Gateway(client);
+                EdtClient clientGateway = new EdtClient(client);
+
+                await Task.Delay(2000);
+
+                string path = @"D:\Plutonist\Pictures\20151111213448_hCFe5.jpeg";
+                using (FileStream fs = File.OpenRead(path))
+                {
+                    await clientGateway._clientControl.DataControl.Sender.WriteDataAsync(fs);
+                }
             });
 
             Console.ReadKey();

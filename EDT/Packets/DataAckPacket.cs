@@ -49,7 +49,7 @@ namespace EDT.Packets
         }
 
         public DataAckPacket(int clientId, int ackSequence, int dataSequence, List<int> ackList) :
-            base(clientId, PacketType.DataAckPacket)
+            base(HeaderSize, PacketType.DataAckPacket, clientId)
         {
             AckSequence = ackSequence;
             DataSequence = dataSequence;

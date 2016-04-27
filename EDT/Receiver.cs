@@ -24,10 +24,10 @@ namespace EDT
 
         // Represent the status of each AckPacket by AckSequence: null-unsent, 0-sent, 1-done
         // <AckSequence, StatusCode>
-        public Dictionary<int, short> AckStatusList = new Dictionary<int, short>(); 
+        public Dictionary<int, short> AckStatusList = new Dictionary<int, short>();
 
         // Output the data stream received from Sender
-        public Stream OutputStream = new MemoryStream();
+        public Stream OutputStream;
 
 
         public Receiver(Connection conn, IPEndPoint senderIPEndPoint, int clientId)
@@ -122,8 +122,8 @@ namespace EDT
             }
 
             // output chunk data
-            Task.Run(async () => {
-                await OutputStream.WriteAsync(packet.Chunk, packet.ChunkOffset, packet.ChunkSize);
+            Task.Run(() => {
+                Console.Write("Server Received Data Size: " + packet.Chunk.Length);
             });
         }
 
