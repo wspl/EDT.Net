@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace EDT
@@ -13,13 +14,16 @@ namespace EDT
     {
         public Connection Conn;
 
-        public Dictionary<int, ServerControl> ServerControls;
+        public Dictionary<int, EdtClient> EdtClients;
+        public EdtClient NewEdtClient;
+
+        public ClientConnectCallback OnClientConnect;
 
         public EdtListener(IPEndPoint localEP)
         {
             Conn = new Connection(ConnectionMode.Server, localEP);
 
-            ServerControls = new Dictionary<int, ServerControl>();
+            EdtClients = new Dictionary<int, EdtClient>();
             Task.Run(async () => {
                 while (true)
                 {
@@ -45,17 +49,17 @@ namespace EDT
 
             if (packet.Type == PacketType.DataPacket)
             {
-                ServerControls[packet.ClientId].DataControl.Receiver.OnData((DataPacket)packet);
+                EdtClients[packet.ClientId].ServerControl.DataControl.Receiver.OnData((DataPacket)packet);
             }
 
             if (packet.Type == PacketType.DataAckPacket)
             {
-                ServerControls[packet.ClientId].DataControl.Sender.OnDataAck((DataAckPacket)packet);
+                EdtClients[packet.ClientId].ServerControl.DataControl.Sender.OnDataAck((DataAckPacket)packet);
             }
 
             if (packet.Type == PacketType.DataAck2Packet)
             {
-                ServerControls[packet.ClientId].DataControl.Receiver.OnDataAck2((DataAck2Packet)packet);
+                EdtClients[packet.ClientId].ServerControl.DataControl.Receiver.OnDataAck2((DataAck2Packet)packet);
             }
         }
 
@@ -72,13 +76,19 @@ namespace EDT
             if (clientId == 0)
             {
                 ServerControl serverControl = new ServerControl(Conn, clientIPEndPoint);
+                EdtClient edtClient = new EdtClient(serverControl);
+
                 clientId = serverControl.ClientId;
 
-                ServerControls.Add(clientId, serverControl);
+                EdtClients.Add(clientId, edtClient);
                 Console.WriteLine("A Client connected in: {0} - {1}", clientId, clientIPEndPoint.ToString());
+
+                OnClientConnect?.Invoke(edtClient);
             }
 
-            ServerControls[clientId].OnPing(pingPacket);
+            EdtClients[clientId].ServerControl.OnPing(pingPacket);
         }
+
+        public delegate void ClientConnectCallback(EdtClient client);
     }
 }

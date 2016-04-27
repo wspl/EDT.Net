@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using EDT.Packets;
 using System.Net.Sockets;
+using System.IO;
 
 namespace EDT
 {
@@ -22,7 +23,9 @@ namespace EDT
         public EdtClientSide Side;
 
         private ClientControl _clientControl;
-        private ServerControl _serverControl;
+        public ServerControl ServerControl;
+
+        public ConnectCallback OnConnect;
 
         public EdtClient(IPEndPoint remoteEP)
         {
@@ -42,7 +45,7 @@ namespace EDT
         internal EdtClient(ServerControl serverControl)
         {
             _conn = serverControl.Conn;
-            _serverControl = serverControl;
+            ServerControl = serverControl;
         }
 
         /// <summary>
@@ -57,6 +60,7 @@ namespace EDT
             if (packet.Type == PacketType.Ping2Packet)
             {
                 _clientControl.OnPing2((Ping2Packet)packet);
+                // TODO: Callback
             }
 
             if (packet.Type == PacketType.DataPacket)
@@ -75,6 +79,6 @@ namespace EDT
             }
         }
 
-        
+        public delegate void ConnectCallback(Stream stream);
     }
 }

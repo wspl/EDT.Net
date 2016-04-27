@@ -26,9 +26,10 @@ namespace EDT
         // <AckSequence, StatusCode>
         public Dictionary<int, short> AckStatusList = new Dictionary<int, short>();
 
-        // Output the data stream received from Sender
-        public Stream OutputStream;
+        // Event of receiving data from Sender.
+        public ReceiveCallback OnReceive;
 
+        public delegate void ReceiveCallback(byte[] chunk, int offset, int size);
 
         public Receiver(Connection conn, IPEndPoint senderIPEndPoint, int clientId)
         {
@@ -122,9 +123,7 @@ namespace EDT
             }
 
             // output chunk data
-            Task.Run(() => {
-                Console.Write("Server Received Data Size: " + packet.Chunk.Length);
-            });
+            OnReceive(packet.Chunk, packet.ChunkOffset, packet.ChunkSize);
         }
 
         /// <summary>

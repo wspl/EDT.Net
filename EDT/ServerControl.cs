@@ -8,7 +8,7 @@ using EDT.Packets;
 
 namespace EDT
 {
-    class ServerControl
+    public class ServerControl
     {
         public Connection Conn;
         public DataControl DataControl;

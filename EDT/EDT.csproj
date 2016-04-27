@@ -49,6 +49,7 @@
     <Compile Include="EdtClient.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Connection.cs" />
+    <Compile Include="EdtStream.cs" />
     <Compile Include="Packets\DataAck2Packet.cs" />
     <Compile Include="Packets\DataAckPacket.cs" />
     <Compile Include="Packets\DataPacket.cs" />
