@@ -24,20 +24,24 @@ namespace EDT
             set
             {
                 _clientId = value;
-                DataControl.ClientId = value;
+
+                if (DataControl != null)
+                {
+                    DataControl.ClientId = value;
+                }
             }
         }
 
         public int PingId = 0;
         public int PingResponsed = 0;
         
+
         public ClientControl(Connection conn)
         {
             Conn = conn;
 
-            DataControl = new DataControl(conn, null);
-            DataControl.SendSpeed = Config.UploadSpeed;
-            DataControl.ReceiveSpeed = Config.DownloadSpeed;
+            DataControl = new DataControl(conn, ClientId, ServerIPEndPoint);
+            DataControl.Sender.SendSpeed = Config.UploadSpeed;
 
             BeginPing();
         }

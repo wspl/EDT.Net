@@ -49,17 +49,17 @@ namespace EDT
 
             if (packet.Type == PacketType.DataPacket)
             {
-                ClientControl.DataControl.OnData((DataPacket)packet);
+                ClientControl.DataControl.Receiver.OnData((DataPacket)packet);
             }
 
             if (packet.Type == PacketType.DataAckPacket)
             {
-                ClientControl.DataControl.OnDataAck((DataAckPacket)packet);
+                ClientControl.DataControl.Sender.OnDataAck((DataAckPacket)packet);
             }
 
             if (packet.Type == PacketType.DataAck2Packet)
             {
-                ClientControl.DataControl.OnDataAck2((DataAck2Packet)packet);
+                ClientControl.DataControl.Receiver.OnDataAck2((DataAck2Packet)packet);
             }
         }
 
@@ -79,17 +79,17 @@ namespace EDT
 
             if (packet.Type == PacketType.DataPacket)
             {
-                ServerControls[packet.ClientId].DataControl.OnData((DataPacket)packet);
+                ServerControls[packet.ClientId].DataControl.Receiver.OnData((DataPacket)packet);
             }
 
             if (packet.Type == PacketType.DataAckPacket)
             {
-                ServerControls[packet.ClientId].DataControl.OnDataAck((DataAckPacket)packet);
+                ServerControls[packet.ClientId].DataControl.Sender.OnDataAck((DataAckPacket)packet);
             }
 
             if (packet.Type == PacketType.DataAck2Packet)
             {
-                ServerControls[packet.ClientId].DataControl.OnDataAck2((DataAck2Packet)packet);
+                ServerControls[packet.ClientId].DataControl.Receiver.OnDataAck2((DataAck2Packet)packet);
             }
         }
 
@@ -102,13 +102,15 @@ namespace EDT
         {
             int clientId = pingPacket.ClientId;
 
-            // Whether it is a new client
+            // Whether is a new client
             if (clientId == 0)
             {
                 ServerControl serverControl = new ServerControl(Conn, 0, clientIPEndPoint);
                 clientId = serverControl.GetHashCode();
                 serverControl.ClientId = clientId;
                 ServerControls.Add(clientId, serverControl);
+
+                Console.WriteLine("A Client connected in: " + clientIPEndPoint.ToString());
             }
 
             ServerControls[clientId].OnPing(pingPacket);

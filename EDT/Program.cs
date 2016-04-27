@@ -28,11 +28,15 @@ namespace EDT
         static void Main(string[] args)
         {
 
-            //Connection server = new Connection(ConnectionMode.Server);
-            //Connection client = new Connection(ConnectionMode.Client);
+            Task.Run(() => {
+                Connection server = new Connection(ConnectionMode.Server, new IPEndPoint(IPAddress.Any, 12344));
+                Gateway serverGateway = new Gateway(server);
+            });
 
-            //Gateway serverGateway = new Gateway(server);
-            //Gateway clientGateway = new Gateway(client);
+            Task.Run(() => {
+                Connection client = new Connection(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 12344));
+                Gateway clientGateway = new Gateway(client);
+            });
 
             Console.ReadKey();
         }

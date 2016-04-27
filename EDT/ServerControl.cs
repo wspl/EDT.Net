@@ -13,7 +13,24 @@ namespace EDT
         public Connection Conn;
         public DataControl DataControl;
 
-        public int ClientId;
+        public int _clientId;
+        public int ClientId
+        {
+            get
+            {
+                return _clientId;
+            }
+            set
+            {
+                _clientId = value;
+
+                if (DataControl != null)
+                {
+                    DataControl.ClientId = value;
+                }
+            }
+        }
+
         public IPEndPoint ClientIPEndPoint;
 
         public ServerControl(Connection conn, int clientId, IPEndPoint clientIPEndPoint)
@@ -22,7 +39,7 @@ namespace EDT
             ClientId = clientId;
             ClientIPEndPoint = clientIPEndPoint;
 
-            DataControl = new DataControl(conn, ClientIPEndPoint);
+            DataControl = new DataControl(conn, 0, clientIPEndPoint);
         }
 
         /// <summary>
@@ -31,8 +48,7 @@ namespace EDT
         /// <param name="pingPacket">Ping packet received from client.</param>
         public void OnPing(PingPacket pingPacket)
         {
-            DataControl.SendSpeed = pingPacket.DownloadSpeed;
-            DataControl.ReceiveSpeed = pingPacket.UploadSpeed;
+            DataControl.Sender.SendSpeed = pingPacket.DownloadSpeed;
 
             Ping2Packet ping2Packet = new Ping2Packet(ClientId, pingPacket.PingId);
 
